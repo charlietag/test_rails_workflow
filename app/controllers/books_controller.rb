@@ -1,5 +1,5 @@
 class BooksController < ApplicationController
-  before_action :set_book, only: [:show, :edit, :update, :destroy]
+  before_action :set_book, only: [:show, :edit, :update, :destroy, :state_change]
 
   # GET /books
   # GET /books.json
@@ -11,6 +11,42 @@ class BooksController < ApplicationController
   # GET /books/1.json
   def show
   end
+  
+  # PATCH/PUT /books/1/state_change
+  def state_change
+    @books = Book.all
+    book_event = params[:event]
+    #if @book.send "may_#{book_event}?".to_sym
+    #  @book.send "#{book_event}!".to_sym
+    #end
+    #render :index
+
+    #---------try aasm method-------
+    #return render plain: @book.inspect
+    #@book.review!
+    #return render plain: @book.aasm.events(permitted: true).map(&:name).join.inspect
+    #return render plain: params[:event]
+    #book_event = @book.aasm.events(permitted: true).map(&:name).join
+    #return render plain: "@book.#{book_event}!"
+    #eval "@book.#{book_event}!"
+    #@book.send "#{book_event}!".to_sym
+    #---------try aasm method-------
+    
+    respond_to do |format|
+      #if eval "@book.#{book_event}!"
+      if @book.send "can_#{book_event}?".to_sym
+        #eval "@book.#{book_event}!"
+        @book.send "#{book_event}!".to_sym
+        format.html { redirect_to books_path, notice: 'State of Book was successfully changed.' }
+        format.js
+        #format.json { render :show, status: :created, location: @book }
+      else
+        format.html { redirect_to books_path, notice: 'State of Book : Failed to change.' }
+        #format.json { render json: @book.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
 
   # GET /books/new
   def new

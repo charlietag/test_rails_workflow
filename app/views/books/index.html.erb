@@ -7,6 +7,8 @@
     <tr>
       <th>Name</th>
       <th>Author</th>
+      <th>Status</th>
+      <th>To Action</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -16,6 +18,13 @@
       <tr>
         <td><%= book.name %></td>
         <td><%= book.author %></td>
+        <td><span id="workflow_state_<%= book.id %>"><%= book.current_state %></span></td>
+        <td><span id="workflow_event_<%= book.id %>">
+            <%# book.current_state.events.stringify_keys.keys.each do |event| %>
+            <% book.current_state.events.keys.each do |event| %>
+              <%= link_to event, state_change_book_path(book, event: event),remote: true, method: :patch, class: "btn btn-default" %>
+            <% end %>
+        </span></td>
         <td><%= link_to 'Show', book %></td>
         <td><%= link_to 'Edit', edit_book_path(book) %></td>
         <td><%= link_to 'Destroy', book, method: :delete, data: { confirm: 'Are you sure?' } %></td>
@@ -27,3 +36,7 @@
 <br>
 
 <%= link_to 'New Book', new_book_path %>
+
+<hr>
+
+<div id="msg"></div>
